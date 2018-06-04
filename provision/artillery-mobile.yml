@@ -1,0 +1,22 @@
+config:
+  target: "{{ url }}"
+  phases:
+    - duration: DURATION
+      arrivalRate: ARRIVAL_RATE
+  payload:
+    path: "PATH_TO_URLS"
+    fields:
+      - "url"
+  tls:
+    rejectUnauthorized: false
+
+scenarios:
+  -
+    name: "server requests"
+    flow:
+      -
+        get:
+          url: "{{ url }}"
+          headers:
+            User-Agent: "bluewin-app"
+            Content-Type: "application/json; charset=utf-8"

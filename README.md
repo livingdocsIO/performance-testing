@@ -39,7 +39,7 @@ aws ec2 describe-key-pairs --key-name terraform
 aws ec2 delete-key-pair --key-name terraform && rm -f terraform.pem
 ```
 
-# Basic usage
+# Usage
 
 1. Plan (get a preview of what would be the impact of the command):
 
@@ -61,6 +61,13 @@ Do you want to perform these actions?
 
 Select `yes` when asked to enter a value.
 
+If you know what you are doing and you want to skip the confirmation:
+
+```
+terraform apply -var-file=variables.tfvars -auto-approve
+```
+
+
 3. Update the hosts
 
 ```
@@ -75,13 +82,7 @@ terraform output instances > hosts
 ansible all -i hosts -m ping -u ubuntu
 ```
 
-5. Make sure you have connection to the hosts
-
-# Advanced usage
-
-```
-terraform apply -var-file=variables.tfvars -auto-approve
-```
+5. Prepare
 
 # Destroy all instances
 

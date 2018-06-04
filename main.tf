@@ -39,7 +39,7 @@ resource "aws_instance" "web-performance-test" {
   security_groups = ["${aws_security_group.with_ssh.name}"]
   key_name        = "${var.key_name}"
   count           = "${var.count}"
-  user_data       = "${file("config/provision.sh")}"
+  user_data       = "${file("provision/provisioner.sh")}"
 
   tags {
     Name = "web-performance-test"
