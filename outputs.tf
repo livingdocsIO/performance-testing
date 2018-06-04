@@ -1,3 +1,3 @@
 output "instances" {
-  value = "${join(",", aws_instance.web-performance-test.*.public_dns)}"
+  value = "${join("\n", aws_instance.web-performance-test.*.public_dns)}"
 }
