@@ -4,3 +4,5 @@ terraform.tfstate
 terraform.tfvars
 hosts
 *.pem
+*.retry
+.DS_Store
