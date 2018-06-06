@@ -1,6 +1,7 @@
 ---
 - hosts: all
   gather_facts: true
+
   vars:
     remote_path: "{{ ansible_env.HOME }}/performance-testing"
     duration: "{{ artillery_duration | default(180) | int }}"
@@ -9,39 +10,48 @@
     rps: "{{ (arrival_rate | int) * number_of_hosts | int }}"
     hostname: "{{ ansible_ec2_public_hostname }}"
     report_name: "{{ remote_path }}/{{ hostname }}-report-{{ rps }}-rps.json"
+
   tasks:
+
     - name: gather EC2 instance metadata
       action: ec2_metadata_facts
+
     - name: update the urls list path
       replace:
         path: "{{ remote_path }}/artillery-web.yml"
         regexp: 'duration:(\s+.*)'
         replace: 'duration: {{ duration }}'
         backup: yes
+
     - name: update the urls list path
       replace:
         path: "{{ remote_path }}/artillery-web.yml"
         regexp: 'arrivalRate:(\s+.*)'
         replace: 'arrivalRate: {{ arrival_rate }}'
         backup: yes
+
     - name: update the urls list path
       replace:
         path: "{{ remote_path }}/artillery-mobile.yml"
         regexp: 'duration:(\s+.*)'
         replace: 'duration: {{ duration }}'
         backup: yes
+
     - name: update the urls list path
       replace:
         path: "{{ remote_path }}/artillery-mobile.yml"
         regexp: 'arrivalRate:(\s+.*)'
         replace: 'arrivalRate: {{ arrival_rate }}'
         backup: yes
+
     - name: ensure the remote report file does not exist
       file:
         path: "{{ report_name }}"
         state: absent
+
     - name: executes web performance test
       command: 'artillery run -o {{ report_name }} "{{ remote_path }}/artillery-web.yml"'
+
     - name: fetch the results locally
       fetch:
         src: "{{ report_name }}"
