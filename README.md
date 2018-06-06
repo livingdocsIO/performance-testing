@@ -89,3 +89,7 @@ ansible all -i hosts -m ping -u ubuntu
 ```
 terraform destroy -var-file=variables.tfvars -auto-approve
 ```
+
+# Caveats
+
+- there is no live output of artillery executing requests against the server. Ansible has not yet implemented it as a feature. Read [here](https://github.com/ansible/ansible/issues/3887) and [here](https://github.com/ansible/ansible/issues/4870)
