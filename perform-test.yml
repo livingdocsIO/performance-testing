@@ -9,7 +9,8 @@
     number_of_hosts: "{{ groups['all'] | length | int }}"
     rps: "{{ (arrival_rate | int) * number_of_hosts | int }}"
     hostname: "{{ ansible_ec2_public_hostname }}"
-    report_name: "{{ remote_path }}/{{ hostname }}-report-{{ rps }}-rps.json"
+    json_report: "{{ remote_path }}/{{ hostname }}-report-{{ rps }}-rps.json"
+    html_report: "{{ remote_path }}/{{ hostname }}-report-{{ rps }}-rps.html"
 
   tasks:
 
@@ -44,16 +45,30 @@
         replace: 'arrivalRate: {{ arrival_rate }}'
         backup: yes
 
-    - name: ensure the remote report file does not exist
+    - name: ensure the remote json report does not exist
       file:
-        path: "{{ report_name }}"
+        path: "{{ json_report }}"
+        state: absent
+
+    - name: ensure the remote html report does not exist
+      file:
+        path: "{{ html_report }}"
         state: absent
 
     - name: executes web performance test
-      command: 'artillery run -o {{ report_name }} "{{ remote_path }}/artillery-web.yml"'
+      command: 'artillery run -o {{ json_report }} "{{ remote_path }}/artillery-web.yml"'
 
-    - name: fetch the results locally
+    - name: create html report
+      command: 'artillery report {{ json_report }} -o {{ html_report }}'
+
+    - name: fetch the json reports locally
       fetch:
-        src: "{{ report_name }}"
+        src: "{{ json_report }}"
+        dest: "./results/"
+        flat: yes
+
+    - name: fetch the html reports locally
+      fetch:
+        src: "{{ html_report }}"
         dest: "./results/"
         flat: yes
