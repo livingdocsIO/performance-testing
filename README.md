@@ -2,14 +2,19 @@
 
 ## Ansible
 
-- python -c "import ansible;print(ansible.__version__)"
-- don't install ansible with brew, install python with pip. 
-- pip install ansible
+- please install it through `pip` (not through `brew`). Ansible is using `boto` (python interface for AWS), so installing ansible through pip is the working option. Something like the following should work (your mileage may vary):
 
-``` without sudo
-sudo pip install --upgrade pip
-sudo pip install boto
-sudo yum install ansible
+```
+$ pip install --upgrade pip
+$ pip install boto
+$ pip install ansible
+$ ansible --version
+ansible 2.5.4
+  config file = /Users/georgi/Projects/livingdocs/bluewin/performance-testing/ansible.cfg
+  configured module search path = ['/Users/georgi/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /Users/georgi/.pyenv/versions/3.5.0/lib/python3.5/site-packages/ansible
+  executable location = /Users/georgi/.pyenv/versions/3.5.0/bin/ansible
+  python version = 3.5.0 (default, Mar 17 2017, 17:54:06) [GCC 4.2.1 Compatible Apple LLVM 7.3.0 (clang-703.0.31)]
 ```
 
 ## Terraform setup
