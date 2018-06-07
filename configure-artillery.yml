@@ -1,11 +1,11 @@
 ---
 - hosts: all
 
-  vars:
-    remote_path: "{{ ansible_env.HOME }}/performance-testing"
-    urls_path: "{{ urls_list | default('urls.txt') }}"
-
   tasks:
+
+    - set_fact:
+        remote_path: "{{ ansible_env.HOME }}/performance-testing"
+        urls_path: "{{ urls_list | default('urls.txt') }}"
 
     - name: create the base directory
       file:
@@ -22,9 +22,6 @@
 
 - hosts: tag_Name_mobile
 
-  vars:
-    remote_path: "{{ ansible_env.HOME }}/performance-testing"
-
   tasks: 
 
     - name: copy the artillery mobile template
@@ -34,9 +31,6 @@
 
 - hosts: tag_Name_web
 
-  vars:
-    remote_path: "{{ ansible_env.HOME }}/performance-testing"
-
   tasks:
 
     - name: copy the artillery web template
@@ -45,10 +39,6 @@
         dest: "{{ remote_path }}/artillery-configuration.yml"
 
 - hosts: all
-
-  vars:
-    remote_path: "{{ ansible_env.HOME }}/performance-testing"
-    urls_path: "{{ urls_list | default('urls.txt') }}"
 
   tasks:
     - name: update the urls list path

@@ -1,5 +1,17 @@
 # Prerequisites
 
+## Ansible
+
+- python -c "import ansible;print(ansible.__version__)"
+- don't install ansible with brew, install python with pip. 
+- pip install ansible
+
+``` without sudo
+sudo pip install --upgrade pip
+sudo pip install boto
+sudo yum install ansible
+```
+
 ## Terraform setup
 
 - installation guide if you need one: https://www.terraform.io/downloads.html.
