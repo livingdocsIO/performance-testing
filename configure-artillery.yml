@@ -1,6 +1,5 @@
 ---
 - hosts: all
-  gather_facts: true
 
   vars:
     remote_path: "{{ ansible_env.HOME }}/performance-testing"
@@ -16,31 +15,45 @@
         group: "{{ ansible_env.USER }}"
         mode: 0775
 
-    - name: copy the artillery mobile template
-      copy:
-        src: "./provision/artillery-mobile.yml"
-        dest: "{{ remote_path }}/artillery-mobile.yml"
-
-    - name: copy the artillery web template
-      copy:
-        src: "./provision/artillery-web.yml"
-        dest: "{{ remote_path }}/artillery-web.yml"
-
     - name: copy the urls list
       copy:
         src: "./provision/{{ urls_path }}"
         dest: "{{ remote_path }}/{{ urls_path }}"
 
-    - name: update the urls list path
-      replace:
-        path: "{{ remote_path }}/artillery-web.yml"
-        regexp: 'path:(\s+.*)'
-        replace: 'path: "{{ remote_path }}/{{ urls_path }}"'
-        backup: yes
+- hosts: tag_Name_mobile
 
+  vars:
+    remote_path: "{{ ansible_env.HOME }}/performance-testing"
+
+  tasks: 
+
+    - name: copy the artillery mobile template
+      copy:
+        src: "./provision/artillery-mobile.yml"
+        dest: "{{ remote_path }}/artillery-configuration.yml"
+
+- hosts: tag_Name_web
+
+  vars:
+    remote_path: "{{ ansible_env.HOME }}/performance-testing"
+
+  tasks:
+
+    - name: copy the artillery web template
+      copy:
+        src: "./provision/artillery-web.yml"
+        dest: "{{ remote_path }}/artillery-configuration.yml"
+
+- hosts: all
+
+  vars:
+    remote_path: "{{ ansible_env.HOME }}/performance-testing"
+    urls_path: "{{ urls_list | default('urls.txt') }}"
+
+  tasks:
     - name: update the urls list path
       replace:
-        path: "{{ remote_path }}/artillery-mobile.yml"
+        path: "{{ remote_path }}/artillery-configuration.yml"
         regexp: 'path:(\s+.*)'
         replace: 'path: "{{ remote_path }}/{{ urls_path }}"'
         backup: yes

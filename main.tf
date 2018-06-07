@@ -38,10 +38,23 @@ resource "aws_instance" "web-performance-test" {
   instance_type   = "${var.webp_instance_type}"
   security_groups = ["${aws_security_group.with_ssh.name}"]
   key_name        = "${var.key_name}"
-  count           = "${var.count}"
+  count           = "${min(var.count, 2) - 1}"              # we subtract one due to the machine dedicated to mobile api testing
   user_data       = "${file("provision/provisioner.sh")}"
 
   tags {
-    Name = "web-performance-test"
+    Name = "web"
+  }
+}
+
+resource "aws_instance" "mobile-performance-test" {
+  ami             = "${var.webp_ami}"
+  instance_type   = "${var.webp_instance_type}"
+  security_groups = ["${aws_security_group.with_ssh.name}"]
+  key_name        = "${var.key_name}"
+  count           = 1
+  user_data       = "${file("provision/provisioner.sh")}"
+
+  tags {
+    Name = "mobile"
   }
 }

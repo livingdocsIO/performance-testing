@@ -19,28 +19,14 @@
 
     - name: update the urls list path
       replace:
-        path: "{{ remote_path }}/artillery-web.yml"
+        path: "{{ remote_path }}/artillery-configuration.yml"
         regexp: 'duration:(\s+.*)'
         replace: 'duration: {{ duration }}'
         backup: yes
 
     - name: update the urls list path
       replace:
-        path: "{{ remote_path }}/artillery-web.yml"
-        regexp: 'arrivalRate:(\s+.*)'
-        replace: 'arrivalRate: {{ arrival_rate }}'
-        backup: yes
-
-    - name: update the urls list path
-      replace:
-        path: "{{ remote_path }}/artillery-mobile.yml"
-        regexp: 'duration:(\s+.*)'
-        replace: 'duration: {{ duration }}'
-        backup: yes
-
-    - name: update the urls list path
-      replace:
-        path: "{{ remote_path }}/artillery-mobile.yml"
+        path: "{{ remote_path }}/artillery-configuration.yml"
         regexp: 'arrivalRate:(\s+.*)'
         replace: 'arrivalRate: {{ arrival_rate }}'
         backup: yes
@@ -56,7 +42,7 @@
         state: absent
 
     - name: executes web performance test
-      command: 'artillery run -o {{ json_report }} "{{ remote_path }}/artillery-web.yml"'
+      command: 'artillery run -o {{ json_report }} "{{ remote_path }}/artillery-configuration.yml"'
 
     - name: create html report
       command: 'artillery report {{ json_report }} -o {{ html_report }}'
