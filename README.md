@@ -48,15 +48,16 @@
 
 ## Launched instances
 
-- the terraform setup prepares machines to make requests with artillery against the target servers.
+- the terraform setup prepares machines to make requests with `artillery` against the target servers.
 - all instances are of the same type of aws machine, however one of them is tagged with `mobile` and the others are tagged with `web`. Later we use use this notation to deliver the right artillery configuration in order to make a regular `GET` request or mobile api request with custom headers (this is the bluewin specific part).
-- by default we launch 2 instances (one `web` and one `mobile`). You can launch any number of instances (for example `10`) using the following command:
+- by default we launch 2 instances (one `web` and one `mobile`). The `web` instance would make a regular `GET` request. The `mobile` instance would make a request with custom header in order to deliver mobile specicic json.
+- you can launch any number of instances (for example `10`) using the following command:
 
 ```
 terraform apply -auto-approve -var count=10
 ```
 
-- the above command will launch 9 `web` instances and 1 `mobile` instance.
+- the above command will launch 10 instances: 9 `web` instances and 1 `mobile` instance.
 - have a look at [terraform.tfvars](./terraform.tfvars) for a list of variables you can override during terraform setup.
 
 # Setup
@@ -274,7 +275,9 @@ can't guarantee that exactly these actions will be performed if
 
 ## Prepare urls list
 
-- [ ] WIP - link to the team repo?
+- the urls list is a simple file with only one url per line.
+- here we don't tackle the question how we obtain the [urls list](./provision/urls.txt).
+- steps how this list could be prepared for bluewin could be found [here](https://github.com/upfrontIO/team/blob/master/Coding/Performance/prepare-urls.md).
 
 # Usage
 
@@ -312,15 +315,25 @@ ansible-playbook ./configure-artillery.yml
 
 4. Perform a test:
 
-```
-ansible-playbook perform-test.yml --extra-vars "artillery_duration=3 artillery_arrival_rate=7"
-```
+- with `artillery_duration` you control for how long (in seconds) to run the performance test. 
+- with `artillery_arrival_rate` you control for how many requests per second a single instance should make. 
+- for example if you want to have 100 requests per second for 1 minute and you have 10 instances, you would use:
 
-- [ ] WIP explain the `extra-vars` part
+  ```
+  ansible-playbook perform-test.yml --extra-vars "artillery_duration=60 artillery_arrival_rate=10"
+  ```
 
 # Results
 
-- `perform-test.yml` 
+- once you run the load test you can have a look at the results in the `results` folder:
+
+  ![screen shot 2018-06-07 at 15 54 39](https://user-images.githubusercontent.com/1632188/41103871-787b7802-6a6a-11e8-92d6-34395e1e80dd.png)
+
+- filename legend for `ec2-18-184-248-107.eu-central-1.compute.amazonaws.com-report-10-rps.html`:
+  - the public dns of the instance (for example: `ec2-18-184-248-107.eu-central-1.compute.amazonaws.com`)
+  - the (total) number of requests during this run of the performance testing - `10-rps`.
+  - you get the `.json` and the `.html` reports.
+  - if you open the `.html` report in a browser, it gives you a good idea how the load testing went.
 
 # Destroy all instances
 
