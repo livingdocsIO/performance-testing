@@ -335,10 +335,13 @@ ansible-playbook ./configure-artillery.yml
   - you get the `.json` and the `.html` reports.
   - if you open the `.html` report in a browser, it gives you a good idea how the load testing went.
 
-# Destroy all instances
+# Clean up
+
+
+- once you are done with the load testing and the results are collected, you should **remove all instances and the ssh key pair**:
 
 ```
-terraform destroy -auto-approve
+terraform destroy -auto-approve && aws ec2 delete-key-pair --key-name terraform && rm -f terraform.pem
 ```
 
 # Caveats
@@ -347,16 +350,8 @@ terraform destroy -auto-approve
 
 # Help and support
 
-Here you can find more information around the commands used in the guide:
-
 ## Displaying Your Key Pair
 
 ```
 aws ec2 describe-key-pairs --key-name terraform
-```
-
-## Deleting Your Key Pair
-
-```
-aws ec2 delete-key-pair --key-name terraform && rm -f terraform.pem
 ```
