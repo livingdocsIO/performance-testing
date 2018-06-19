@@ -1,8 +1,18 @@
+# What is this project about
+
+When we do performance or load testing, we usually go through the following steps:
+  1. prepare urls following the process outlined [here](https://github.com/upfrontIO/team/blob/master/Coding/Performance/prepare-urls.md).
+  2. provision aws machines with node and artillery.
+  3. distribute the artillery configuration to the aws machines.
+  4. execute the artillery script against the aws machines which in turn make requests against the target server.
+
+This project takes care of the tedious task to provision the aws machines, distribute the artillery configuration to the aws machines and executes the artillery scripts on all machines via ansible playbooks.
+
 # Prerequisites
 
 ## Ansible
 
-- please install it through `pip` (not through `brew`). Ansible is using `boto` (python interface for AWS), so installing ansible through pip is the working option. Something like the following should work (your mileage may vary):
+- please install it through `pip` (not through `brew`). Ansible is using `boto` (python interface for AWS), so installing ansible through `pip` is the working option. Something like the following should work (your mileage may vary):
 
   ```
   $ pip install --upgrade pip
@@ -20,7 +30,7 @@
 ## Terraform
 
 - installation guide if you need one: https://www.terraform.io/downloads.html.
-- example of a terraform running successfully:
+- example of terraform running successfully:
 
   ```
   $ terraform --version
@@ -29,7 +39,8 @@
 
 ## AWS cli
 
-- configure the AWS cli. This might be already configured for most of you, but make sure you use the right credentials (bluewin, livingdocs). The configuration requires aws access key and aws secret access key.
+- you need to configure the AWS cli. This might be already configured for most of you, but make sure you use the right credentials (bluewin, livingdocs) as this setup would likely incur some charges on your bill.
+- the project needs aws access key and aws secret access key.
 - here is a good [aws + terraform guide](https://hackernoon.com/introduction-to-aws-with-terraform-7a8daf261dc0). Use the part on how to create on aws account and configure the cli.
 - example of a successful configuration:
 
@@ -48,9 +59,10 @@
 
 ## Launched instances
 
-- the terraform setup prepares machines to make requests with `artillery` against the target servers.
-- all instances are of the same type of aws machine, however one of them is tagged with `mobile` and the others are tagged with `web`. Later we use use this notation to deliver the right artillery configuration in order to make a regular `GET` request or mobile api request with custom headers (this is the bluewin specific part).
-- by default we launch 2 instances (one `web` and one `mobile`). The `web` instance would make a regular `GET` request. The `mobile` instance would make a request with custom header in order to deliver mobile specicic json.
+- the terraform setup prepares machines to make requests with `artillery` against the target servers. You can learn more about artillery here: https://artillery.io/.
+- all provisioned machines are of the same ec2 instance type. However one of them is tagged with `mobile` and the others are tagged with `web`. Later we would use this notation to deliver the right artillery configuration. 
+- We employ different artillery configuration to make a regular `GET` request or a mobile api request with custom headers (this is the bluewin specific part).
+- by default we launch 2 instances (one `web` and one `mobile`). The `web` instance would make a regular `GET` request. The `mobile` instance would make a request with custom header which would deliver json.
 - you can launch any number of instances (for example `10`) using the following command:
 
 ```
@@ -102,7 +114,7 @@ commands will detect it and remind you to do so if necessary
 
 <br/>
 
-2. Ensure you have aws configuration and terraform setup by checking the state:
+2. Ensure you have proper aws configuration, connection and terraform setup by checking the state:
 
 ```
 terraform plan
@@ -261,13 +273,14 @@ can't guarantee that exactly these actions will be performed if
 
 ## Create a new key pair
 
-- taken from https://docs.aws.amazon.com/cli/latest/userguide/cli-ec2-keypairs.html:
+- we need a key pair so we could later connect to the machines via ssh.
+- create a new key pait (take from https://docs.aws.amazon.com/cli/latest/userguide/cli-ec2-keypairs.html):
 
   ```
   aws ec2 create-key-pair --key-name terraform --query 'KeyMaterial' --output text > terraform.pem && chmod 400 terraform.pem
   ```
 
-- the key pair we have in the [variables](./variables.tfvars) and used throughout this README is named `terraform`. If you want to name your ssh key differently, make sure you pass to terraform like that:
+- the key pair we have in the [variables](./variables.tfvars) and used throughout this README is named `terraform`. If you want to name your ssh key differently, make sure you pass the `key_name`:
 
   ```
   terraform apply -auto-approve -var key_name="MY_SSH_KEY_NAME"
@@ -277,7 +290,7 @@ can't guarantee that exactly these actions will be performed if
 
 - the urls list is a simple file with only one url per line.
 - here we don't tackle the question how we obtain the [urls list](./provision/urls.txt).
-- steps how this list could be prepared for bluewin could be found [here](https://github.com/upfrontIO/team/blob/master/Coding/Performance/prepare-urls.md).
+- steps how this list could be prepared for bluewin specific scenario could be found [here](https://github.com/upfrontIO/team/blob/master/Coding/Performance/prepare-urls.md).
 
 # Usage
 
@@ -307,7 +320,7 @@ If you know what you are doing and you want to skip the confirmation:
 terraform apply -auto-approve
 ```
 
-3. Configure artillery (uploads artillery templates to the remote hosts and the urls list):
+3. Configure artillery (uploads artillery templates and urls list to the remote hosts):
 
 ```
 ansible-playbook ./configure-artillery.yml
@@ -316,7 +329,7 @@ ansible-playbook ./configure-artillery.yml
 4. Perform a test:
 
 - with `artillery_duration` you control for how long (in seconds) to run the performance test. 
-- with `artillery_arrival_rate` you control for how many requests per second a single instance should make. 
+- with `artillery_arrival_rate` you control for how many requests per second a **single instance** should make. 
 - for example if you want to have 100 requests per second for 1 minute and you have 10 instances, you would use:
 
   ```
