@@ -1,7 +1,7 @@
 # What is this project about
 
 When we do performance or load testing, we usually go through the following steps:
-  1. prepare urls following the process outlined [here](https://github.com/upfrontIO/team/blob/master/Coding/Performance/prepare-urls.md).
+  1. prepare urls following the process outlined [here](https://github.com/livingdocsIO/team/blob/master/Coding/Performance/prepare-urls.md).
   2. provision aws machines with node and artillery.
   3. distribute the artillery configuration to the aws machines.
   4. execute the artillery script against the aws machines which in turn make requests against the target server.
@@ -290,7 +290,7 @@ can't guarantee that exactly these actions will be performed if
 
 - the urls list is a simple file with only one url per line.
 - here we don't tackle the question how we obtain the [urls list](./provision/urls.txt).
-- steps how this list could be prepared for bluewin specific scenario could be found [here](https://github.com/upfrontIO/team/blob/master/Coding/Performance/prepare-urls.md).
+- steps how this list could be prepared for bluewin specific scenario could be found [here](https://github.com/livingdocsIO/team/blob/master/Coding/Performance/prepare-urls.md).
 
 # Usage
 
